@@ -1,0 +1,66 @@
+plugins {
+    id 'java'
+    id 'idea'
+    id 'jacoco'
+    id 'groovy'
+    id "org.sonarqube" version "2.6"
+}
+
+group = 'jp.co.soramitsu'
+version = '1.0'
+sourceCompatibility = 1.8
+
+jacoco {
+    toolVersion = "0.8.1"
+    reportsDir = file("$buildDir/reports/")
+}
+
+jacocoTestReport {
+    executionData fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec")
+
+    reports {
+        xml.enabled true
+        xml.destination file("${buildDir}/reports/coverage.xml")
+        csv.enabled false
+        html.enabled true
+        html.destination file("${buildDir}/reports/html")
+    }
+
+    dependsOn(test)
+}
+
+wrapper {
+    gradleVersion = '5.0'
+}
+
+repositories {
+    jcenter()
+    mavenCentral()
+    maven { url "https://jitpack.io" }
+}
+
+final def spockVersion = '1.2-groovy-2.4'
+final def spockGenesisVersion = '0.6.0'
+final def lombokVersion = '1.18.4'
+final def cglibVersion = '3.2.10'
+final def bytebuddyVersion = '1.9.6'
+final def objgenesisVersion = '3.0.1'
+final def irohaTestcontainersVersion = 'iroha-1.0.0_rc1-SNAPSHOT'
+final def irohaPureJavaVersion = 'v1.0.0_rc1-SNAPSHOT'
+
+
+dependencies {
+    // for mocking in groovy
+    testCompile("net.bytebuddy:byte-buddy:${bytebuddyVersion}")
+    testCompile("org.objenesis:objenesis:${objgenesisVersion}")
+    testCompile("cglib:cglib-nodep:${cglibVersion}")
+    testCompile("com.nagternal:spock-genesis:${spockGenesisVersion}")
+
+    implementation "com.github.Warchant:testcontainers-iroha:${irohaTestcontainersVersion}"
+    implementation "com.github.warchant:iroha-pure-java:${irohaPureJavaVersion}"
+
+    compileOnly("org.projectlombok:lombok:${lombokVersion}")
+    testCompileOnly("org.projectlombok:lombok:${lombokVersion}")
+    testCompile("org.spockframework:spock-core:${spockVersion}")
+}
+
